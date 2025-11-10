@@ -1,4 +1,4 @@
-package denis.userservice.model;
+package denis.userservice.entity;
 
 
 import jakarta.persistence.Column;
@@ -17,11 +17,9 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Auditable {
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;

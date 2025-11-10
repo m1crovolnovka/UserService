@@ -1,4 +1,4 @@
-package denis.userservice.model;
+package denis.userservice.entity;
 
 
 import jakarta.persistence.*;
@@ -20,13 +20,11 @@ public class User extends Auditable{
     @Id
     @GeneratedValue
     private UUID id;
-
     private String name;
     private String surname;
     private LocalDate birthDate;
     private String email;
-    private boolean active;
-
+    private Boolean active;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentCard> paymentCards;
 }

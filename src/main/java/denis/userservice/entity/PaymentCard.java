@@ -1,4 +1,4 @@
-package denis.userservice.model;
+package denis.userservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
