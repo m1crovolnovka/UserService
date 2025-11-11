@@ -11,6 +11,5 @@ public interface PaymentCardMapper {
     @Mapping(source = "user.id", target = "userId")
     PaymentCardResponseDto toResponseDto(PaymentCard card);
 
-    @Mapping(source = "userId", target = "user.id")
     PaymentCard toEntity(PaymentCardRequestDto dto);
 }

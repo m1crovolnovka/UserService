@@ -10,10 +10,9 @@ import java.util.UUID;
 @Table(name = "payment_cards")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @RequiredArgsConstructor
 @Builder
+@AllArgsConstructor
 public class PaymentCard extends Auditable{
     @Id
     @GeneratedValue
@@ -25,4 +24,5 @@ public class PaymentCard extends Auditable{
     private String holder;
     private LocalDate expirationDate;
     private Boolean active;
+
 }

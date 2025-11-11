@@ -1,18 +1,22 @@
 package denis.userservice.service.Impl;
 
-import denis.userservice.dao.PaymentCardDao;
 import denis.userservice.dto.request.PaymentCardRequestDto;
 import denis.userservice.dto.response.PaymentCardResponseDto;
 import denis.userservice.entity.PaymentCard;
+import denis.userservice.entity.User;
+import denis.userservice.exception.CardListFullException;
+import denis.userservice.exception.CardNotFoundException;
+import denis.userservice.exception.UserNotFoundException;
 import denis.userservice.mapper.PaymentCardMapper;
+import denis.userservice.repository.PaymentCardRepository;
+import denis.userservice.repository.UserRepository;
 import denis.userservice.service.PaymentCardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -20,59 +24,66 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PaymentCardServiceImpl implements PaymentCardService {
 
-    private final PaymentCardDao cardDao;
+    private final PaymentCardRepository cardRepository;
+    private final UserRepository userRepository;
     private final PaymentCardMapper cardMapper;
 
 
     @Override
     public PaymentCardResponseDto create(PaymentCardRequestDto dto) {
-        PaymentCard entity = cardMapper.toEntity(dto);
-        PaymentCard saved = cardDao.create(dto.userId(), entity);
-        return cardMapper.toResponseDto(saved);
+        PaymentCard card = cardMapper.toEntity(dto);
+        User user = userRepository.findById(dto.userId()).orElseThrow(() -> new UserNotFoundException("User not found"));
+        if(user.getPaymentCards() != null && user.getPaymentCards().size() >= 5) {
+            throw new CardListFullException("Card list is full");
+        }
+        return cardMapper.toResponseDto(cardRepository.save(card));
     }
 
     @Override
     public PaymentCardResponseDto getById(UUID id) {
-        return cardMapper.toResponseDto(cardDao.getById(id));
+        return cardMapper.toResponseDto(cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException("Card not found")));
     }
 
     @Override
-    public Page<PaymentCardResponseDto> getAll(int page, int size) {
-        Page<PaymentCard> cards = cardDao.getAll(page, size);
+    public Page<PaymentCardResponseDto> getAll(Pageable pageable) {
+        Page<PaymentCard> cards = cardRepository.findAll(pageable);
         return new PageImpl<>(
                 cards.get().map(cardMapper::toResponseDto).toList(),
-                PageRequest.of(page, size),
+                pageable,
                 cards.getTotalElements()
         );
     }
 
     @Override
     public List<PaymentCardResponseDto> getByUserId(UUID userId) {
-        return cardDao.getByUserId(userId).stream().map(cardMapper::toResponseDto).toList();
+        return cardRepository.findAllCardsByUserId(userId).stream().map(cardMapper::toResponseDto).toList();
     }
 
     @Transactional
     @Override
     public PaymentCardResponseDto update(UUID id, PaymentCardRequestDto dto) {
-        PaymentCard updated = cardDao.update(id,cardMapper.toEntity(dto));
-        return cardMapper.toResponseDto(updated);
+        PaymentCard card = cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException("Card not found"));
+        card.setNumber(dto.number());
+        card.setExpirationDate(dto.expirationDate());
+        card.setHolder(dto.holder());
+        return cardMapper.toResponseDto(cardRepository.save(card));
     }
 
     @Transactional
     @Override
     public void activate(UUID id) {
-        cardDao.activate(id);
+        cardRepository.activate(id);
     }
 
     @Transactional
     @Override
     public void deactivate(UUID id) {
-        cardDao.deactivate(id);
+        cardRepository.deactivate(id);
     }
 
     @Transactional
     @Override
     public void delete(UUID id) {
-        cardDao.delete(id);
+        cardRepository.deleteById(id);
     }
 }
