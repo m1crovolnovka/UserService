@@ -12,6 +12,10 @@ import denis.userservice.repository.PaymentCardRepository;
 import denis.userservice.repository.UserRepository;
 import denis.userservice.service.PaymentCardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -22,13 +26,14 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = "cards")
 public class PaymentCardServiceImpl implements PaymentCardService {
 
     private final PaymentCardRepository cardRepository;
     private final UserRepository userRepository;
     private final PaymentCardMapper cardMapper;
 
-
+    @CachePut(key = "#result.id")
     @Override
     public PaymentCardResponseDto create(PaymentCardRequestDto dto) {
         PaymentCard card = cardMapper.toEntity(dto);
@@ -39,10 +44,12 @@ public class PaymentCardServiceImpl implements PaymentCardService {
         return cardMapper.toResponseDto(cardRepository.save(card));
     }
 
+    @Cacheable(key = "#id")
     @Override
     public PaymentCardResponseDto getById(UUID id) {
         return cardMapper.toResponseDto(cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException("Card not found")));
     }
+
 
     @Override
     public Page<PaymentCardResponseDto> getAll(Pageable pageable) {
@@ -60,6 +67,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
     }
 
     @Transactional
+    @CachePut(key = "#id")
     @Override
     public PaymentCardResponseDto update(UUID id, PaymentCardRequestDto dto) {
         PaymentCard card = cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException("Card not found"));
@@ -70,18 +78,21 @@ public class PaymentCardServiceImpl implements PaymentCardService {
     }
 
     @Transactional
+    @CacheEvict(key = "#id")
     @Override
     public void activate(UUID id) {
         cardRepository.activate(id);
     }
 
     @Transactional
+    @CacheEvict(key = "#id")
     @Override
     public void deactivate(UUID id) {
         cardRepository.deactivate(id);
     }
 
     @Transactional
+    @CacheEvict(key = "#id")
     @Override
     public void delete(UUID id) {
         cardRepository.deleteById(id);

@@ -9,6 +9,10 @@ import denis.userservice.repository.UserRepository;
 import denis.userservice.service.UserService;
 import denis.userservice.specification.UserSpecifications;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +23,13 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = "users")
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    @CachePut(key="#result.id")
     @Override
     public UserResponseDto create(UserRequestDto dto) {
         User entity = userMapper.toEntity(dto);
@@ -31,6 +37,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponseDto(saved);
     }
 
+    @Cacheable(key="#id")
     @Override
     public UserResponseDto getById(UUID id) {
         return userMapper.toResponseDto(userRepository.findById(id)
@@ -56,6 +63,7 @@ public class UserServiceImpl implements UserService {
      }
 
     @Transactional
+    @CachePut(key="#id")
     @Override
     public UserResponseDto update(UUID id, UserRequestDto dto) {
         User user = userMapper.toEntity(dto);
@@ -65,18 +73,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
+    @CacheEvict(key = "#id")
     @Override
     public void activate(UUID id) {
         userRepository.activate(id);
     }
 
     @Transactional
+    @CacheEvict(key = "#id")
     @Override
     public void deactivate(UUID id) {
         userRepository.deactivate(id);
     }
 
     @Transactional
+    @CacheEvict(key = "#id")
     @Override
     public void delete(UUID id) {
         userRepository.deleteById(id);
