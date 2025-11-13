@@ -41,10 +41,10 @@ public class UserController {
 
     @GetMapping
        public ResponseEntity<Page<UserResponseDto>> getAllUsers(
-            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) String surname,
             Pageable pageable) {
-        return ResponseEntity.ok(userService.getAll(firstName, surname, pageable));
+        return ResponseEntity.ok(userService.getAll(name, surname, pageable));
     }
 
     @PutMapping("/{id}")

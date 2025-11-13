@@ -41,6 +41,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
         if(user.getPaymentCards() != null && user.getPaymentCards().size() >= 5) {
             throw new CardListFullException("Card list is full");
         }
+        card.setUser(user);
         return cardMapper.toResponseDto(cardRepository.save(card));
     }
 

@@ -66,8 +66,11 @@ public class UserServiceImpl implements UserService {
     @CachePut(key="#id")
     @Override
     public UserResponseDto update(UUID id, UserRequestDto dto) {
-        User user = userMapper.toEntity(dto);
-        user.setId(id);
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+        user.setName(dto.name());
+        user.setSurname(dto.surname());
+        user.setEmail(dto.email());
+        user.setBirthDate(dto.birthDate());
         User updated = userRepository.save(user);
         return userMapper.toResponseDto(updated);
     }

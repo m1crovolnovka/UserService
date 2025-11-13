@@ -13,7 +13,7 @@ import java.util.UUID;
 @Repository
 public interface PaymentCardRepository extends JpaRepository<PaymentCard, UUID> {
     @Query(
-            value = "SELECT * FROM payment_card WHERE user_id = :userId",
+            value = "SELECT * FROM payment_cards WHERE user_id = :userId",
             nativeQuery = true
     )
     List<PaymentCard> findAllCardsByUserId(@Param("userId") UUID userId);
@@ -23,7 +23,7 @@ public interface PaymentCardRepository extends JpaRepository<PaymentCard, UUID> 
     void activate(@Param("cardId") UUID userId);
 
     @Modifying
-    @Query("UPDATE PaymentCard c SET c.active = false WHERE c.id = :userId")
+    @Query("UPDATE PaymentCard c SET c.active = false WHERE c.id = :cardId")
     void deactivate(@Param("cardId") UUID userId);
 
 }
