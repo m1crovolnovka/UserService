@@ -48,7 +48,7 @@ jobs:
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
         run: |
           mvn sonar:sonar \
-            -Dsonar.projectKey=${{ env.IMAGE_NAME }} \
+            -Dsonar.projectKey=m1crovolnovka_UserService \
             -Dsonar.organization=${{ env.SONAR_ORGANIZATION }} \
             -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
             -Dsonar.login=${{ env.SONAR_TOKEN }}
