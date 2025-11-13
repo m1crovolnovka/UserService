@@ -7,30 +7,6 @@ jobs:
   build:
     name: Build, Test, Analyze, and Publish Coverage
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16-alpine
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_DB: user_service
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-        options: >-
-          --health-cmd="pg_isready -U user"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
 
     env:
       JAVA_VERSION: '21'
