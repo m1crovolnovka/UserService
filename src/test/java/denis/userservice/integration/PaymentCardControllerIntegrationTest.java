@@ -149,7 +149,7 @@ public class PaymentCardControllerIntegrationTest {
         mockMvc.perform(post("/api/cards")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isNotFound()); // Ожидаем 404 по UserNotFoundException
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -166,7 +166,7 @@ public class PaymentCardControllerIntegrationTest {
                 user.getId(),
                 "9999888877776666",
                 "OLD CARD",
-                LocalDate.now().minusDays(1) // Дата в прошлом
+                LocalDate.now().minusDays(1)
         );
         mockMvc.perform(post("/api/cards")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -189,7 +189,7 @@ public class PaymentCardControllerIntegrationTest {
     void getCardById_shouldReturn404ForNonExistingCard() throws Exception {
         UUID nonExistingId = UUID.randomUUID();
         mockMvc.perform(get("/api/cards/{id}", nonExistingId))
-                .andExpect(status().isNotFound()); // Ожидаем 404 по CardNotFoundException
+                .andExpect(status().isNotFound());
     }
 
 
