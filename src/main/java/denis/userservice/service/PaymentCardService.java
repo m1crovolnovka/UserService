@@ -11,10 +11,10 @@ import java.util.UUID;
 public interface PaymentCardService {
     PaymentCardResponseDto create(PaymentCardRequestDto dto);
     PaymentCardResponseDto getById(UUID id);
-    Page<PaymentCardResponseDto> getAll(Pageable pageable);
+    Page<PaymentCardResponseDto> getAll(String cardNumber, String holderName, Pageable pageable);
     List<PaymentCardResponseDto> getByUserId(UUID userId);
     PaymentCardResponseDto update(UUID id, PaymentCardRequestDto dto);
-    void activate(UUID id);
-    void deactivate(UUID id);
-    void delete(UUID id);
+    PaymentCardResponseDto activate(UUID id);
+    PaymentCardResponseDto deactivate(UUID id);
+    UUID delete(UUID id);
 }

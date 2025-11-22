@@ -51,7 +51,7 @@ public class UserServiceImplTest {
         user.setBirthDate(LocalDate.of(1990, 1, 1));
         user.setEmail("john@example.com");
 
-        requestDto = new UserRequestDto("John", "Doe", LocalDate.of(1990,1,1), "john@example.com");
+        requestDto = new UserRequestDto(UUID.randomUUID(),"John", "Doe", LocalDate.of(1990,1,1), "john@example.com");
         responseDto = new UserResponseDto(user.getId(), "John", "Doe", LocalDate.of(1990,1,1), "john@example.com", true, null);
     }
 

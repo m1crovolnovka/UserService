@@ -17,7 +17,6 @@ import java.util.UUID;
 @Setter
 public class User extends Auditable{
     @Id
-    @GeneratedValue
     private UUID id;
     private String name;
     private String surname;

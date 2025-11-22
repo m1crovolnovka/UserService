@@ -125,10 +125,12 @@ public class PaymentCardServiceImplTest {
         PaymentCard card1 = new PaymentCard();
         card1.setId(UUID.randomUUID());
         card1.setNumber("1111 2222 3333 4444");
+        card1.setHolder("Slava Marlow");
 
         PaymentCard card2 = new PaymentCard();
         card2.setId(UUID.randomUUID());
         card2.setNumber("5555 6666 7777 8888");
+        card2.setHolder("Jack Bauer");
 
         List<PaymentCard> cards = List.of(card1, card2);
         Pageable pageable = PageRequest.of(0, 10);
@@ -138,7 +140,7 @@ public class PaymentCardServiceImplTest {
         when(cardMapper.toResponseDto(card1)).thenReturn(new PaymentCardResponseDto(card1.getId(), user.getId(), card1.getNumber(), null, null, true));
         when(cardMapper.toResponseDto(card2)).thenReturn(new PaymentCardResponseDto(card2.getId(),user.getId(), card2.getNumber(), null, null, true));
 
-        Page<PaymentCardResponseDto> result = cardService.getAll(pageable);
+        Page<PaymentCardResponseDto> result = cardService.getAll(null, null,pageable);
 
         assertEquals(2, result.getContent().size());
         assertEquals("1111 2222 3333 4444", result.getContent().get(0).number());

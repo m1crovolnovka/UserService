@@ -19,47 +19,65 @@ import java.time.Duration;
 @EnableCaching
 public class RedisConfig {
 
+//    @Bean
+//    public ObjectMapper redisObjectMapper() {
+//        ObjectMapper mapper = new ObjectMapper();
+//        mapper.registerModule(new JavaTimeModule());
+//        return mapper;
+//    }
+//
+//    private GenericJackson2JsonRedisSerializer createJsonSerializer(ObjectMapper objectMapper) {
+//        return new GenericJackson2JsonRedisSerializer(objectMapper);
+//    }
+//
+//    @Bean
+//    public RedisTemplate<String, Object> redisTemplate(
+//            RedisConnectionFactory connectionFactory,
+//            ObjectMapper objectMapper) {
+//
+//        RedisTemplate<String, Object> template = new RedisTemplate<>();
+//        template.setConnectionFactory(connectionFactory);
+//
+//        GenericJackson2JsonRedisSerializer jsonSerializer = createJsonSerializer(objectMapper);
+//
+//        template.setKeySerializer(new StringRedisSerializer());
+//        template.setValueSerializer(jsonSerializer);
+//        template.setHashKeySerializer(new StringRedisSerializer());
+//        template.setHashValueSerializer(jsonSerializer);
+//
+//        template.afterPropertiesSet();
+//        return template;
+//    }
+//
+//    @Bean
+//    public RedisCacheManager cacheManager(
+//            RedisConnectionFactory connectionFactory,
+//            ObjectMapper objectMapper) {
+//        GenericJackson2JsonRedisSerializer jsonSerializer = createJsonSerializer(objectMapper);
+//        RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+//                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jsonSerializer))
+//                .entryTtl(Duration.ofHours(1));
+//
+//        return RedisCacheManager.builder(connectionFactory)
+//                .cacheDefaults(cacheConfiguration)
+//                .build();
+//    }
+    //НУЖНО НАСТРОИТЬ КЭШ
+
     @Bean
-    public ObjectMapper redisObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        return mapper;
-    }
+    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper) {
 
-    private GenericJackson2JsonRedisSerializer createJsonSerializer(ObjectMapper objectMapper) {
-        return new GenericJackson2JsonRedisSerializer(objectMapper);
-    }
+        GenericJackson2JsonRedisSerializer serializer =
+                new GenericJackson2JsonRedisSerializer(objectMapper);
 
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(
-            RedisConnectionFactory connectionFactory,
-            ObjectMapper objectMapper) {
-
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
-
-        GenericJackson2JsonRedisSerializer jsonSerializer = createJsonSerializer(objectMapper);
-
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(jsonSerializer);
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(jsonSerializer);
-
-        template.afterPropertiesSet();
-        return template;
-    }
-
-    @Bean
-    public RedisCacheManager cacheManager(
-            RedisConnectionFactory connectionFactory,
-            ObjectMapper objectMapper) {
-        GenericJackson2JsonRedisSerializer jsonSerializer = createJsonSerializer(objectMapper);
-        RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jsonSerializer))
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+                .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(serializer)
+                )
                 .entryTtl(Duration.ofHours(1));
 
         return RedisCacheManager.builder(connectionFactory)
-                .cacheDefaults(cacheConfiguration)
+                .cacheDefaults(config)
                 .build();
     }
 }
